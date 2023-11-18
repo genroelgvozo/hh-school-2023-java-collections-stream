@@ -3,9 +3,9 @@ package tasks;
 import common.Area;
 import common.Person;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /*
 Имеются
@@ -19,6 +19,16 @@ public class Task6 {
   public static Set<String> getPersonDescriptions(Collection<Person> persons,
                                                   Map<Integer, Set<Integer>> personAreaIds,
                                                   Collection<Area> areas) {
-    return new HashSet<>();
+    Map<Integer, String> areaNames = areas.stream().collect(Collectors.toMap(Area::getId, Area::getName));
+
+    return persons.stream()
+        .flatMap(
+            p -> personAreaIds.get(p.getId()).stream()
+                .map(areaNames::get)
+                .map(areaName -> String.format("%s - %s", p.getFirstName(), areaName))
+        )
+        .collect(Collectors.toSet());
+
   }
+
 }
