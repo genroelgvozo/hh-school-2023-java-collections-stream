@@ -1,9 +1,9 @@
 package tasks;
 
 import common.Company;
-import common.Vacancy;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
 Из коллекции компаний необходимо получить всевозможные различные названия вакансий
@@ -11,20 +11,7 @@ import java.util.*;
 public class Task7 {
 
   public static Set<String> vacancyNames(Collection<Company> companies) {
-    if (companies.isEmpty()) {
-      return new HashSet<>();
-    }
-    Set<String> vacancy_names = new HashSet<>();
-
-    for (Company comp_cur : companies) {
-
-      Set<Vacancy> vacancies_of_company = comp_cur.getVacancies();
-
-      for (Vacancy vac : vacancies_of_company) {
-        vacancy_names.add(vac.getTitle());
-      }
-    }
-    return vacancy_names;
+    return new HashSet<>();
   }
 
 }
