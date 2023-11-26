@@ -1,9 +1,11 @@
 package tasks;
 
 import common.Person;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /*
 Задача 2
@@ -16,6 +18,27 @@ public class Task2 {
   public static List<Person> combineAndSortWithLimit(Collection<Person> persons1,
                                                      Collection<Person> persons2,
                                                      int limit) {
-    return new ArrayList<>();
+    TreeMap<Instant, Person> persons = new TreeMap<>();
+    ArrayList<Person> personsLimitCounts = new ArrayList<>();
+
+
+    Stream
+           .concat(
+           persons1.stream(),
+           persons2.stream())
+           .forEach(x ->
+                   persons.put(x.getCreatedAt(),x)
+           );
+
+    persons.entrySet().stream()
+            .limit(limit)
+            .forEach(y -> {
+              personsLimitCounts.add(y.getValue());
+            });
+
+    return  personsLimitCounts;
+
+    // сложность по времени - O(logN) ( logN - добавление элементов в сортированную таблицу по величине CreatedAt)
+    // сложность по памяти - O(n) ( поля КЛЮЧ и ЗНАЧЕНИЕ для Хэш-таблицы и поле ЗНАЧЕНИЕ в списке )
   }
 }
