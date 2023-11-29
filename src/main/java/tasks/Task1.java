@@ -23,18 +23,18 @@ public class Task1 {
 
     public List<Person> findOrderedPersons(List<Integer> personIds) {
 
-        Map <Integer, Person> tableOfPersons = new HashMap<>();
-        List<Person> OrderedListOfPersons = new LinkedList<>();
+        Map <Integer, Person> tableOfPersons;
+        List<Person> OrderedListOfPersons;
 
-          personService.findPersons(personIds).stream()   // заполнили таблицу
-                .forEach(x ->
-                        tableOfPersons.put(x.getId(),x)
+        tableOfPersons = personService.findPersons(personIds).stream()
+                .collect(Collectors.toMap(
+                        x -> x.getId(),
+                        x -> x)
                 );
 
-        personIds.stream()
-                .forEach(y -> {
-                    OrderedListOfPersons.add(tableOfPersons.get(y));  // добавляем Персоны согласно personIds в результат
-                });
+        OrderedListOfPersons = personIds.stream()
+                .map(x -> tableOfPersons.get(x))
+                .collect(Collectors.toCollection(LinkedList::new));
 
         return OrderedListOfPersons;
 

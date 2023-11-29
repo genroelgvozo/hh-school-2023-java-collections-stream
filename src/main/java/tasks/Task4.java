@@ -23,11 +23,15 @@ public class Task4 {
   }
 
   public List<ApiPersonDto> convert(List<Person> persons) {
-    ArrayList<ApiPersonDto> convertedPersonsToDTO = new ArrayList<>();
-    persons.stream()
-            .map(personConverter::convert)
-            .forEach(x->convertedPersonsToDTO.add(x));
+    List<ApiPersonDto> convertedPersonsToDTO;
+
+    convertedPersonsToDTO = persons.stream()
+                        .map(personConverter::convert)
+                        .collect(Collectors.toList());
 
     return convertedPersonsToDTO;
   }
 }
+
+// сложность по времени - O(n) ( Обработка n элементов)
+// сложность по памяти - O(n) ( поле ЗНАЧЕНИЕ в списке )

@@ -6,6 +6,7 @@ import common.PersonConverter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /*
 Задача 5
@@ -22,14 +23,17 @@ public class Task5 {
     this.personConverter = personConverter;
   }
 
-  public List<ApiPersonDto> convert(List<Person> persons, Map<Integer, Integer> personAreaIds) {
-    ArrayList<ApiPersonDto> convertedPersonsToDTOwithArea = new ArrayList<>();
+  public List<ApiPersonDto> convert(List<Person> persons,
+                                    Map<Integer, Integer> personAreaIds) {
 
-    persons.stream()
-            .map(x-> personConverter.convert(x,  personAreaIds.get(x.getId())))
-            .forEach(y -> convertedPersonsToDTOwithArea.add(y));
+    List<ApiPersonDto> convertedPersonsToDTOwithArea;
 
+    convertedPersonsToDTOwithArea = persons.stream()
+            .map(x-> personConverter.convert(x, personAreaIds.get(x.getId())))
+            .collect(Collectors.toList());
 
     return convertedPersonsToDTOwithArea;
   }
 }
+
+

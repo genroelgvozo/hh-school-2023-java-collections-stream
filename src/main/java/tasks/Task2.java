@@ -18,23 +18,22 @@ public class Task2 {
   public static List<Person> combineAndSortWithLimit(Collection<Person> persons1,
                                                      Collection<Person> persons2,
                                                      int limit) {
-    TreeMap<Instant, Person> persons = new TreeMap<>();
-    ArrayList<Person> personsLimitCounts = new ArrayList<>();
+    Map<Instant, Person> persons;
+    List<Person> personsLimitCounts;
 
+    persons = Stream.concat(
+                    persons1.stream(),
+                    persons2.stream())
+            .collect(Collectors.toMap(
+                    x -> x.getCreatedAt(),
+                    x -> x,
+                    (x1, x2) -> x1,
+                    TreeMap::new));
 
-    Stream
-           .concat(
-           persons1.stream(),
-           persons2.stream())
-           .forEach(x ->
-                   persons.put(x.getCreatedAt(),x)
-           );
-
-    persons.entrySet().stream()
+    personsLimitCounts = persons.entrySet().stream()
             .limit(limit)
-            .forEach(y -> {
-              personsLimitCounts.add(y.getValue());
-            });
+            .map(x -> x.getValue())
+            .collect(Collectors.toList());
 
     return  personsLimitCounts;
 
