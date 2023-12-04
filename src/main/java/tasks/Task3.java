@@ -12,18 +12,15 @@ import java.util.stream.Collectors;
 public class Task3 {
 
   public static List<Person> sort(Collection<Person> persons) {
-    List<Person> sortedList;
 
-      sortedList =   persons.stream()
+      return   persons.stream()
                         .sorted(Comparator
-                                .comparing(Person::getFirstName)
-                                .thenComparing(Person::getSecondName)
-                                .thenComparing(Person::getCreatedAt))
+                            .comparing(Person::getFirstName)
+                            .thenComparing(Person::getSecondName)
+                            .thenComparing(Person::getCreatedAt))
                         .collect(Collectors.toList());
 
-    return sortedList;
-
-      // сложность по времени - O(n * logN * logN) ( logN - добавление элементов в сортированную таблицу по величине
+      // сложность по времени - O(logN * logN * logN) ( logN - добавление элементов в сортированную таблицу по величине
       // CreatedAt и getSecondName и для каждого getFirstName которых n)
       // сложность по памяти - O(n) ( поле ЗНАЧЕНИЕ в списке )
 

@@ -18,26 +18,28 @@ public class Task2 {
   public static List<Person> combineAndSortWithLimit(Collection<Person> persons1,
                                                      Collection<Person> persons2,
                                                      int limit) {
-    Map<Instant, Person> persons;
-    List<Person> personsLimitCounts;
 
-    persons = Stream.concat(
-                    persons1.stream(),
-                    persons2.stream())
-            .collect(Collectors.toMap(
-                    x -> x.getCreatedAt(),
-                    x -> x,
-                    (x1, x2) -> x1,
-                    TreeMap::new));
 
-    personsLimitCounts = persons.entrySet().stream()
-            .limit(limit)
-            .map(x -> x.getValue())
-            .collect(Collectors.toList());
+    return Stream
+        .concat(
+            persons1.stream(),
+            persons2.stream())
+        .sorted(Comparator.comparing(Person::getCreatedAt))
+        .limit(limit)
+        .collect(Collectors.toList());
 
-    return  personsLimitCounts;
+    // сложность по времени - O(logN) ( logN - наибольшая сложность - процедура сортировки)
+    // сложность по памяти - O(n) (Величина входных данных)
 
-    // сложность по времени - O(logN) ( logN - добавление элементов в сортированную таблицу по величине CreatedAt)
-    // сложность по памяти - O(n) ( поля КЛЮЧ и ЗНАЧЕНИЕ для Хэш-таблицы и поле ЗНАЧЕНИЕ в списке )
+
+    /*
+      .sorted(new Comparator<Person>() { @Override
+        public int compare(Person o1, Person o2) {
+        return (o1.getCreatedAt().compareTo(o2.getCreatedAt()));
+        }})
+     */
+
+
+
   }
 }

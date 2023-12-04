@@ -23,13 +23,10 @@ public class Task4 {
   }
 
   public List<ApiPersonDto> convert(List<Person> persons) {
-    List<ApiPersonDto> convertedPersonsToDTO;
 
-    convertedPersonsToDTO = persons.stream()
-                        .map(personConverter::convert)
-                        .collect(Collectors.toList());
-
-    return convertedPersonsToDTO;
+    return persons.stream()
+        .map(personConverter::convert)
+        .collect(Collectors.toList());
   }
 }
 

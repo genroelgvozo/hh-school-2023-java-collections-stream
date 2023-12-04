@@ -12,14 +12,11 @@ import java.util.stream.Collectors;
 public class Task7 {
 
   public static Set<String> vacancyNames(Collection<Company> companies) {
-    Set<String> vacances;
 
-    vacances = companies.stream()
-            .flatMap(x-> x.getVacancies().stream()
-                    .map(y -> y.getTitle()))
-            .collect(Collectors.toSet());
+    return companies.stream()
+        .flatMap(x-> x.getVacancies().stream()
+            .map(y -> y.getTitle()))
+        .collect(Collectors.toCollection(HashSet::new));
 
-    return vacances;
   }
-
 }

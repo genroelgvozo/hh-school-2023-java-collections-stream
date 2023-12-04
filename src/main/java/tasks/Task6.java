@@ -18,21 +18,15 @@ public class Task6 {
   public static Set<String> getPersonDescriptions(Collection<Person> persons,
                                                   Map<Integer, Set<Integer>> personAreaIds,
                                                   Collection<Area> areas) {
-    HashSet<String> StringsRegionsForEachPerson;
-    Map<Integer, String> tableOfRegionsName;
 
-    tableOfRegionsName = areas.stream()
+    Map<Integer, String> IdToRegionsName = areas.stream()
             .collect(Collectors.toMap(
                     x -> x.getId(),
                     x -> x.getName()));
 
-
-    StringsRegionsForEachPerson = persons.stream()
-            .flatMap(x ->
-                    (personAreaIds.get(x.getId()).stream()).
-                            map(y -> x.getFirstName() + " - " + tableOfRegionsName.get(y)))
+    return persons.stream()
+            .flatMap(x -> (personAreaIds.get(x.getId()).stream())
+                .map(y -> x.getFirstName() + " - " + IdToRegionsName.get(y)))
             .collect(Collectors.toCollection(HashSet::new));
-
-    return StringsRegionsForEachPerson;
   }
 }

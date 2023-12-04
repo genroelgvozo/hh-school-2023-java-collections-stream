@@ -23,23 +23,16 @@ public class Task1 {
 
     public List<Person> findOrderedPersons(List<Integer> personIds) {
 
-        Map <Integer, Person> tableOfPersons;
-        List<Person> OrderedListOfPersons;
+        Map <Integer, Person> IdToPersons = personService.findPersons(personIds).stream()
+            .collect(Collectors.toMap(x -> x.getId(), x -> x));
 
-        tableOfPersons = personService.findPersons(personIds).stream()
-                .collect(Collectors.toMap(
-                        x -> x.getId(),
-                        x -> x)
-                );
+        return  personIds.stream()
+            .map(x -> IdToPersons.get(x))
+            .collect(Collectors.toCollection(ArrayList::new));
 
-        OrderedListOfPersons = personIds.stream()
-                .map(x -> tableOfPersons.get(x))
-                .collect(Collectors.toCollection(LinkedList::new));
-
-        return OrderedListOfPersons;
-
-        // сложность по времени - O(1) ( Хэш-таблица - добавление за О(1) + Лист связный список - добавление за О(1))
-        // сложность по памяти - O(n) ( поля КЛЮЧ и ЗНАЧЕНИЕ для Хэш-таблицы и поле ЗНАЧЕНИЕ в связном списке )
+        //т.к. создается Мапа и Лист величины n (операция добавления весит 0(1) соотв.) то
+        // сложность по времени - O(n)
+        // сложность по памяти - O(n)
 
     }
 }
