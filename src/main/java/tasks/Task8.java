@@ -23,7 +23,6 @@ public class Task8 {
   //Не хотим выдывать апи нашу фальшивую персону, поэтому конвертим начиная со второй
   public List<String> getNames( @NotNull List<Person> persons) { // добалю-ка @NotNull и далее где могу
     if (persons.size() == 0) { return Collections.emptyList();} // поправлю код - 1 строка вполне читабельна и далее где могу
-
       return persons.stream()
           .skip(1)
           .map(Person::getFirstName)
@@ -37,14 +36,13 @@ public class Task8 {
   //ну и различные имена тоже хочется
   public Set<String> getDifferentNames(@NotNull List<Person> persons) {return new HashSet<>(getNames(persons));}
    // return getNames(persons).stream().distinct().collect(Collectors.toSet()); - не нужен distinct тк есть Set и сам стрим тоже лишний
-
-
   //Для фронтов выдадим полное имя, а то сами не могут
   public String convertPersonToString(@NotNull Person person) {
-
-    String secondName = (person.getSecondName() == null) ? ""  :       person.getSecondName();
-    String firstName =   (person.getFirstName() == null) ? ""  : " " + person.getFirstName();
-    return  secondName + firstName;
+    String secondName = (person.getSecondName() == null) ? "" : person.getSecondName();
+    String space = (person.getFirstName() == null) ? "" : " ";  // ну такое самому не оч нравится - но пока лучше не придумал? зато читаемо
+    String firstName = (person.getFirstName() == null) ? "" : person.getFirstName();
+    return secondName + space + firstName;
+  }
 
 /*
     String result = "";
@@ -63,7 +61,15 @@ public class Task8 {
     */
 
   // словарь id персоны -> ее имя
-  public Map<Integer, String> getPersonNames(Collection<Person> persons) {
+
+  public Map<Integer, String> getPersonNames (@NotNull Collection<Person> persons) {
+      return persons.stream()
+          .collect(Collectors.toMap(
+              x -> x.getId(),
+              x -> convertPersonToString(x))
+              ); //да чтотт в глаза не увидел метод - придумывал явно по глупости ) - пытаюсь создать HashMAp - пока не придумал как
+    }
+    /*
     Map<Integer, String> map = new HashMap<>(1);
     for (Person person : persons) {
       if (!map.containsKey(person.getId())) {
@@ -71,25 +77,29 @@ public class Task8 {
       }
     }
     return map;
-  }
+
+     */
+
 
   // есть ли совпадающие в двух коллекциях персоны?
   public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-    boolean has = false;
-    for (Person person1 : persons1) {
-      for (Person person2 : persons2) {
-        if (person1.equals(person2)) {
-          has = true;
-        }
-      }
-    }
-    return has;
+  // а может сделать проще - мы точно знаем что Сет не допустит дублирования и если
+   // размер Сета будет равен сумме двух коллекций - то все персоны уникальны а если нет то дельта = count
+    // это будет быстрее перебора
+
+    HashSet<Person> personsTogether =  Stream.concat(
+        persons1.stream(),
+        persons2.stream())
+        .collect(Collectors.toCollection(HashSet::new));
+
+    return !(personsTogether.size() == persons1.size() + persons2.size());
   }
 
   //...
-  public long countEven(Stream<Integer> numbers) {
-    count = 0;
-    numbers.filter(num -> num % 2 == 0).forEach(num -> count++);
-    return count;
+  public long countEven(@NotNull  Stream<Integer> numbers) {
+  // мне кажется тут есть КОНУТ для стримов - так читабельнее
+    return  numbers
+        .filter(num -> num % 2 == 0)
+        .count();
   }
 }
