@@ -24,10 +24,10 @@ public class Task1 {
     public List<Person> findOrderedPersons(List<Integer> personIds) {
 
         Map <Integer, Person> IdToPersons = personService.findPersons(personIds).stream()
-            .collect(Collectors.toMap(x -> x.getId(), x -> x));
+            .collect(Collectors.toMap(idPerson -> idPerson.getId(), x -> x));
 
         return  personIds.stream()
-            .map(x -> IdToPersons.get(x))
+            .map(idPerson -> IdToPersons.get(idPerson))
             .collect(Collectors.toCollection(ArrayList::new));
 
         //т.к. создается Мапа и Лист величины n (операция добавления весит 0(1) соотв.) то

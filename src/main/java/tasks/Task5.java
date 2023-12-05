@@ -27,10 +27,10 @@ public class Task5 {
                                     Map<Integer, Integer> personAreaIds) {
 
     return persons.stream()
-            .map(x-> {
-                Integer idPerson = x.getId();
+            .map(person-> {
+                Integer idPerson = person.getId();
                 Integer idArea = personAreaIds.get(idPerson);
-                return personConverter.convert(x, idArea);})
+                return personConverter.convert(person, idArea);})
             .collect(Collectors.toList());
   }
 }

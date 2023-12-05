@@ -21,12 +21,12 @@ public class Task6 {
 
     Map<Integer, String> IdToRegionsName = areas.stream()
             .collect(Collectors.toMap(
-                    x -> x.getId(),
-                    x -> x.getName()));
+                    area -> area.getId(),
+                    area -> area.getName()));
 
     return persons.stream()
-            .flatMap(x -> (personAreaIds.get(x.getId()).stream())
-                .map(y -> x.getFirstName() + " - " + IdToRegionsName.get(y)))
+            .flatMap(person -> (personAreaIds.get(person.getId()).stream())
+                .map(idArea -> person.getFirstName() + " - " + IdToRegionsName.get(idArea)))
             .collect(Collectors.toCollection(HashSet::new));
   }
 }

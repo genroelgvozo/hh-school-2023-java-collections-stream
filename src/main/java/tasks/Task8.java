@@ -23,6 +23,8 @@ public class Task8 {
   //Не хотим выдывать апи нашу фальшивую персону, поэтому конвертим начиная со второй
   public List<String> getNames( @NotNull List<Person> persons) { // добалю-ка @NotNull и далее где могу
     if (persons.size() == 0) { return Collections.emptyList();} // поправлю код - 1 строка вполне читабельна и далее где могу
+    // а если на вход подвется пустое множество? [] ? это не null?
+
       return persons.stream()
           .skip(1)
           .map(Person::getFirstName)
@@ -38,10 +40,10 @@ public class Task8 {
    // return getNames(persons).stream().distinct().collect(Collectors.toSet()); - не нужен distinct тк есть Set и сам стрим тоже лишний
   //Для фронтов выдадим полное имя, а то сами не могут
   public String convertPersonToString(@NotNull Person person) {
-    String secondName = (person.getSecondName() == null) ? "" : person.getSecondName();
-    String space = (person.getFirstName() == null) ? "" : " ";  // ну такое самому не оч нравится - но пока лучше не придумал? зато читаемо
-    String firstName = (person.getFirstName() == null) ? "" : person.getFirstName();
-    return secondName + space + firstName;
+    String firstName = (person.getFirstName() == null) ? "" : person.getFirstName() + " ";
+    String secondName = (person.getSecondName() == null) ? "" : person.getSecondName() + " ";
+    String middleName = (person.getMiddleName() == null) ? "" : person.getSecondName() + " ";
+    return secondName + firstName + middleName + "\b";   // а почему бы просто не убрать последний пробел?
   }
 
 /*
@@ -64,10 +66,13 @@ public class Task8 {
 
   public Map<Integer, String> getPersonNames (@NotNull Collection<Person> persons) {
       return persons.stream()
+
           .collect(Collectors.toMap(
-              x -> x.getId(),
-              x -> convertPersonToString(x))
-              ); //да чтотт в глаза не увидел метод - придумывал явно по глупости ) - пытаюсь создать HashMAp - пока не придумал как
+              person -> person.getId(),
+                  person -> convertPersonToString(person),
+                  (oldValue, newValue) -> oldValue,
+                  HashMap::new));
+      //смешно что позавчера ночью код такой же не получался, вдвойне стыдно что не ставил скобки в бифанкшн - поэтому и не писал такую версию кода
     }
     /*
     Map<Integer, String> map = new HashMap<>(1);
@@ -83,16 +88,18 @@ public class Task8 {
 
   // есть ли совпадающие в двух коллекциях персоны?
   public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-  // а может сделать проще - мы точно знаем что Сет не допустит дублирования и если
-   // размер Сета будет равен сумме двух коллекций - то все персоны уникальны а если нет то дельта = count
-    // это будет быстрее перебора
 
-    HashSet<Person> personsTogether =  Stream.concat(
-        persons1.stream(),
-        persons2.stream())
-        .collect(Collectors.toCollection(HashSet::new));
 
-    return !(personsTogether.size() == persons1.size() + persons2.size());
+    // UPD - теперь как вариант 2 сета - отсечем дубликаты в каждой коллекции и будем искать пересечение
+
+           Set<Person> personsSet1 = persons1.stream().collect(Collectors.toSet());
+           Set<Person> personsSet2 = persons2.stream().collect(Collectors.toSet());
+
+           for (Person tempPerson : personsSet1) {
+            if (persons2.contains(tempPerson)) {
+              return true;
+            }
+           } return false;
   }
 
   //...
