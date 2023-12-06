@@ -27,6 +27,6 @@ public class Task6 {
     return persons.stream()
             .flatMap(person -> (personAreaIds.get(person.getId()).stream())
                 .map(idArea -> person.getFirstName() + " - " + IdToRegionsName.get(idArea)))
-            .collect(Collectors.toCollection(HashSet::new));
+            .collect(Collectors.toSet());
   }
 }

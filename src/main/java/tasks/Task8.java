@@ -22,9 +22,6 @@ public class Task8 {
 
   //Не хотим выдывать апи нашу фальшивую персону, поэтому конвертим начиная со второй
   public List<String> getNames( @NotNull List<Person> persons) { // добалю-ка @NotNull и далее где могу
-    if (persons.size() == 0) { return Collections.emptyList();} // поправлю код - 1 строка вполне читабельна и далее где могу
-    // а если на вход подвется пустое множество? [] ? это не null?
-
       return persons.stream()
           .skip(1)
           .map(Person::getFirstName)
@@ -36,14 +33,17 @@ public class Task8 {
   }
 
   //ну и различные имена тоже хочется
-  public Set<String> getDifferentNames(@NotNull List<Person> persons) {return new HashSet<>(getNames(persons));}
+  public Set<String> getDifferentNames(@NotNull List<Person> persons) {
+    return new HashSet<>(getNames(persons));
+  }
    // return getNames(persons).stream().distinct().collect(Collectors.toSet()); - не нужен distinct тк есть Set и сам стрим тоже лишний
   //Для фронтов выдадим полное имя, а то сами не могут
   public String convertPersonToString(@NotNull Person person) {
-    String firstName = (person.getFirstName() == null) ? "" : person.getFirstName() + " ";
-    String secondName = (person.getSecondName() == null) ? "" : person.getSecondName() + " ";
-    String middleName = (person.getMiddleName() == null) ? "" : person.getSecondName() + " ";
-    return secondName + firstName + middleName + "\b";   // а почему бы просто не убрать последний пробел?
+   return Stream.of(
+            person.getFirstName(),
+            person.getSecondName(),
+            person.getMiddleName())
+        .collect(Collectors.joining(" "));
   }
 
 /*
@@ -70,8 +70,7 @@ public class Task8 {
           .collect(Collectors.toMap(
               person -> person.getId(),
                   person -> convertPersonToString(person),
-                  (oldValue, newValue) -> oldValue,
-                  HashMap::new));
+                  (oldValue, newValue) -> oldValue));
       //смешно что позавчера ночью код такой же не получался, вдвойне стыдно что не ставил скобки в бифанкшн - поэтому и не писал такую версию кода
     }
     /*
@@ -92,14 +91,10 @@ public class Task8 {
 
     // UPD - теперь как вариант 2 сета - отсечем дубликаты в каждой коллекции и будем искать пересечение
 
-           Set<Person> personsSet1 = persons1.stream().collect(Collectors.toSet());
-           Set<Person> personsSet2 = persons2.stream().collect(Collectors.toSet());
+    return persons1.stream()
+        .anyMatch(persons2::contains);
+    // эхх жать тут нет отладчика - хочу посмотреть работает ли код
 
-           for (Person tempPerson : personsSet1) {
-            if (persons2.contains(tempPerson)) {
-              return true;
-            }
-           } return false;
   }
 
   //...

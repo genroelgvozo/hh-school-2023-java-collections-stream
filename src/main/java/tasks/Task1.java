@@ -4,6 +4,7 @@ import common.Person;
 import common.PersonService;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /*
@@ -24,11 +25,11 @@ public class Task1 {
     public List<Person> findOrderedPersons(List<Integer> personIds) {
 
         Map <Integer, Person> IdToPersons = personService.findPersons(personIds).stream()
-            .collect(Collectors.toMap(idPerson -> idPerson.getId(), x -> x));
+            .collect(Collectors.toMap(Person::getId, Function.identity()));
 
         return  personIds.stream()
-            .map(idPerson -> IdToPersons.get(idPerson))
-            .collect(Collectors.toCollection(ArrayList::new));
+            .map(id -> IdToPersons.get(id))
+            .collect(Collectors.toList());
 
         //т.к. создается Мапа и Лист величины n (операция добавления весит 0(1) соотв.) то
         // сложность по времени - O(n)
