@@ -1,12 +1,9 @@
 package tasks;
 
 import common.Person;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,26 +18,37 @@ P.P.S Здесь ваши правки желательно прокоммент
  */
 public class Task8 {
 
-  private long count;
+  private int count; // не слишком круто использовать ЛОНГ? - максимальное число ИНТ 2,4 млрд - треть всей планеты Земля
 
   //Не хотим выдывать апи нашу фальшивую персону, поэтому конвертим начиная со второй
-  public List<String> getNames(List<Person> persons) {
-    if (persons.size() == 0) {
-      return Collections.emptyList();
-    }
-    persons.remove(0);
-    return persons.stream().map(Person::getFirstName).collect(Collectors.toList());
+  public List<String> getNames( @NotNull List<Person> persons) { // добалю-ка @NotNull и далее где могу
+      return persons.stream()
+          .skip(1)
+          .map(Person::getFirstName)
+          .collect(Collectors.toList());
+
+    // persons.remove(0); зачем забивать время этой операцией? перестановка индексов - скип в стриме решает эту задачу
+
+
   }
 
   //ну и различные имена тоже хочется
-  public Set<String> getDifferentNames(List<Person> persons) {
-    return getNames(persons).stream().distinct().collect(Collectors.toSet());
+  public Set<String> getDifferentNames(@NotNull List<Person> persons) {
+    return new HashSet<>(getNames(persons));
+  }
+   // return getNames(persons).stream().distinct().collect(Collectors.toSet()); - не нужен distinct тк есть Set и сам стрим тоже лишний
+  //Для фронтов выдадим полное имя, а то сами не могут
+  public String convertPersonToString(@NotNull Person person) {
+   return Stream.of(
+            person.getFirstName(),
+            person.getSecondName(),
+            person.getMiddleName())
+        .collect(Collectors.joining(" "));
   }
 
-  //Для фронтов выдадим полное имя, а то сами не могут
-  public String convertPersonToString(Person person) {
+/*
     String result = "";
-    if (person.getSecondName() != null) {
+    if (person.getSecondName() != null) {    - ЭТА СТРОКА ПОВТОРЯЕТ СТРОКУ СНИЗУ
       result += person.getSecondName();
     }
 
@@ -49,13 +57,23 @@ public class Task8 {
     }
 
     if (person.getSecondName() != null) {
-      result += " " + person.getSecondName();
+      result += " " + person.getSecondName(); - ЭТА СТРОКА ПОВТОРЯЕТ СТРОКУ СВЕРХУ
     }
     return result;
-  }
+    */
 
   // словарь id персоны -> ее имя
-  public Map<Integer, String> getPersonNames(Collection<Person> persons) {
+
+  public Map<Integer, String> getPersonNames (@NotNull Collection<Person> persons) {
+      return persons.stream()
+
+          .collect(Collectors.toMap(
+              person -> person.getId(),
+                  person -> convertPersonToString(person),
+                  (oldValue, newValue) -> oldValue));
+      //смешно что позавчера ночью код такой же не получался, вдвойне стыдно что не ставил скобки в бифанкшн - поэтому и не писал такую версию кода
+    }
+    /*
     Map<Integer, String> map = new HashMap<>(1);
     for (Person person : persons) {
       if (!map.containsKey(person.getId())) {
@@ -63,25 +81,27 @@ public class Task8 {
       }
     }
     return map;
-  }
+
+     */
+
 
   // есть ли совпадающие в двух коллекциях персоны?
   public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-    boolean has = false;
-    for (Person person1 : persons1) {
-      for (Person person2 : persons2) {
-        if (person1.equals(person2)) {
-          has = true;
-        }
-      }
-    }
-    return has;
+
+
+    // UPD - теперь как вариант 2 сета - отсечем дубликаты в каждой коллекции и будем искать пересечение
+
+    return persons1.stream()
+        .anyMatch(persons2::contains);
+    // эхх жать тут нет отладчика - хочу посмотреть работает ли код
+
   }
 
   //...
-  public long countEven(Stream<Integer> numbers) {
-    count = 0;
-    numbers.filter(num -> num % 2 == 0).forEach(num -> count++);
-    return count;
+  public long countEven(@NotNull  Stream<Integer> numbers) {
+  // мне кажется тут есть КОНУТ для стримов - так читабельнее
+    return  numbers
+        .filter(num -> num % 2 == 0)
+        .count();
   }
 }

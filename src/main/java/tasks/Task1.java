@@ -2,9 +2,10 @@ package tasks;
 
 import common.Person;
 import common.PersonService;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /*
 Задача 1
@@ -15,14 +16,24 @@ import java.util.Set;
  */
 public class Task1 {
 
-  private final PersonService personService;
+    private final PersonService personService;
 
-  public Task1(PersonService personService) {
-    this.personService = personService;
-  }
+    public Task1(PersonService personService) {
+        this.personService = personService;
+    }
 
-  public List<Person> findOrderedPersons(List<Integer> personIds) {
-    Set<Person> persons = personService.findPersons(personIds);
-    return Collections.emptyList();
-  }
+    public List<Person> findOrderedPersons(List<Integer> personIds) {
+
+        Map <Integer, Person> IdToPersons = personService.findPersons(personIds).stream()
+            .collect(Collectors.toMap(Person::getId, Function.identity()));
+
+        return  personIds.stream()
+            .map(id -> IdToPersons.get(id))
+            .collect(Collectors.toList());
+
+        //т.к. создается Мапа и Лист величины n (операция добавления весит 0(1) соотв.) то
+        // сложность по времени - O(n)
+        // сложность по памяти - O(n)
+
+    }
 }
