@@ -7,11 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
-Задача 4
-Список персон класса Person необходимо сконвертировать в список ApiPersonDto
-(предположим, что это некоторый внешний формат)
-Конвертер для одной персоны - personConverter.convert()
-FYI - DTO = Data Transfer Object - распространенный паттерн, можно погуглить
+асимптотика O(n)
  */
 public class Task4 {
 
@@ -22,6 +18,10 @@ public class Task4 {
   }
 
   public List<ApiPersonDto> convert(List<Person> persons) {
-    return new ArrayList<>();
+    List<ApiPersonDto> ans = new ArrayList<>(persons.size());
+    for (Person p : persons) {
+      ans.add(this.personConverter.convert(p));
+    }
+    return ans;
   }
 }
