@@ -40,6 +40,6 @@ public class Task2Test {
   @MethodSource("generateData")
   public void test(Set<Person> persons1, Set<Person> persons2, int limit, List<Integer> expectedIds) {
     assertEquals(expectedIds, Task2.combineAndSortWithLimit(persons1, persons2, limit).stream()
-        .map(Person::getId).toList());
+            .map(Person::getId).toList());
   }
 }
