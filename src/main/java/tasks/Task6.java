@@ -3,6 +3,7 @@ package tasks;
 import common.Area;
 import common.Person;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,16 @@ public class Task6 {
   public static Set<String> getPersonDescriptions(Collection<Person> persons,
                                                   Map<Integer, Set<Integer>> personAreaIds,
                                                   Collection<Area> areas) {
-    return new HashSet<>();
+    Set<String> ans = new HashSet<>();
+    Map<Integer, String> id_areaname = new HashMap<>();
+    for (Area a : areas){
+      id_areaname.put(a.getId(), a.getName());
+    }
+    for (Person p : persons) {
+      for (Integer areaId : personAreaIds.get(p.getId())){
+        ans.add(new String(p.getFirstName()  + " - " + id_areaname.get(areaId)));
+      }
+    }
+    return ans;
   }
 }
