@@ -3,7 +3,10 @@ package tasks;
 import common.Person;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /*
 Задача 2
@@ -12,10 +15,13 @@ import java.util.List;
 отсортировать персоны по дате создания и выдать первые limit штук.
  */
 public class Task2 {
-
   public static List<Person> combineAndSortWithLimit(Collection<Person> persons1,
                                                      Collection<Person> persons2,
                                                      int limit) {
-    return new ArrayList<>();
+                                                      // можно было через concat, но я так понял здесь хотели именно так
+    return Stream.of(persons1, persons2)
+    .flatMap(Collection::stream)
+    .sorted(Comparator.comparing(Person::getCreatedAt))
+    .limit(limit).collect(Collectors.toList());
   }
 }
