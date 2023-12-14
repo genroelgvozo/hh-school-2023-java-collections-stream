@@ -4,8 +4,10 @@ import common.Person;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,67 +23,83 @@ P.P.S Здесь ваши правки желательно прокоммент
  */
 public class Task8 {
 
-  private long count;
-
   //Не хотим выдывать апи нашу фальшивую персону, поэтому конвертим начиная со второй
   public List<String> getNames(List<Person> persons) {
-    if (persons.size() == 0) {
-      return Collections.emptyList();
-    }
-    persons.remove(0);
-    return persons.stream().map(Person::getFirstName).collect(Collectors.toList());
+    /*
+    1. Изменять ArrayList долго
+    2. Изменять чужую коллекцию плохо - он вообще не ожидает (а метод то всего лишь get какой-то)
+    3. Коллекция может быть вообще неизменяемой, тут интерфейс на входе) (практические никто это не вспомнил)
+     */
+    return persons.stream().skip(1).map(Person::getFirstName).collect(Collectors.toList());
   }
 
   //ну и различные имена тоже хочется
   public Set<String> getDifferentNames(List<Person> persons) {
-    return getNames(persons).stream().distinct().collect(Collectors.toSet());
+    // ну тут кто внимательно смотрит на подсветки IDEA - два раза нажал Alt+Enter и радовался
+    // кто-то может даже смотрел лекцию и тоже просек
+    // Но на удивление много тех кто оставил без distinct пример с лекции как делать не надо(
+    return new HashSet<>(getNames(persons));
   }
 
   //Для фронтов выдадим полное имя, а то сами не могут
   public String convertPersonToString(Person person) {
-    String result = "";
-    if (person.getSecondName() != null) {
-      result += person.getSecondName();
-    }
+    return Stream.of(person.getSecondName(), person.getFirstName(), person.getMiddleName())
+        .filter(Objects::nonNull)
+        .collect(Collectors.joining(" "));
+    /*
+    это пример кода когда думаешь - ну неужели чтобы сложить три строчки нужны стримы.
+    Но по итогу - тут написано, что нужно сделать и кратко, а не как)
 
-    if (person.getFirstName() != null) {
-      result += " " + person.getFirstName();
-    }
+    Еще есть вариант с StringJoiner, но туда тоже надо накидывать только не нуллы, а тогда по факту 3 ифа остается
 
-    if (person.getSecondName() != null) {
-      result += " " + person.getSecondName();
-    }
-    return result;
+    В исходном варианте был баг с пробелами (почти никто не увидел), а не только с дублированием поля
+    Это говорит о том что такой код сложнее читать, проще допустить ошибку, сложно глазами увидеть ошибку
+    А если их фиксить - то там еще несколько if-ов, и думаешь зачем я вообще этим занимаюсь
+    Да, мой вариант работает дольше. Даже скорее всего в несколько раз.. т.е. не 1 наносекунду, а 3 =))) ну вы поняли..
+     */
   }
 
   // словарь id персоны -> ее имя
   public Map<Integer, String> getPersonNames(Collection<Person> persons) {
-    Map<Integer, String> map = new HashMap<>(1);
-    for (Person person : persons) {
-      if (!map.containsKey(person.getId())) {
-        map.put(person.getId(), convertPersonToString(person));
-      }
-    }
-    return map;
+    return persons.stream()
+        .collect(Collectors.toMap(Person::getId, this::convertPersonToString, (a, b) -> a));
+    // тут пример был насыщен разными странностями (1 в конструкторе, не выходили сразу и т.д.), в целом просто через стрим мапу всегда удобнее строить
+    // Но многие попались на ловушку - исходная коллекция может содержать дубли, а значит нужен третий параметр
+    // В нем кстати можно экономить (a и b) - они ничего не значит, надо просто показать что какую-то выбрали
   }
 
   // есть ли совпадающие в двух коллекциях персоны?
   public boolean hasSamePersons(Collection<Person> persons1, Collection<Person> persons2) {
-    boolean has = false;
-    for (Person person1 : persons1) {
-      for (Person person2 : persons2) {
-        if (person1.equals(person2)) {
-          has = true;
-        }
-      }
-    }
-    return has;
+    return persons1.stream().anyMatch(new HashSet<>(persons2)::contains);
+    /*
+    тут достаточно много вариантов
+    Можно не делать хешсет - будет по времени почти так же (об этом ниже)
+    Можно Collections.disjoint
+
+    Прикол с размерам слитого сета не работал (можно было там сделать, но выглядело вообще хреново),
+    так как в коллекции одной могут быть дубли, которых нет в другой, и надо вернуть false (а размер сета общего будет отличаться от суммы)
+
+    По поводу асимптотики - на похожий код, но без HashSet, или с disjoint все поголовно отвечали - ну O(nm)
+    И это неверно)
+
+    Дело в том что мы принимаем коллекции, и по факту не знаем что там внутри
+    И если вдруг повезет, что та, на которой вызываем contains из них HashSet - то будет линейно от размера другой
+    Так что даже без создания доп коллекции этот код иногда может быть быстрее чем исходные циклы
+    Поэтому вывод - юзайте contains вместо перебора+equals всегда, коллекция знает лучше как быстро у себя сделать contains)
+
+    Обязательно посмотрите Collections.disjoint - там утилитный метод и интересно выбирается коллекция по которой как раз делать contains
+     */
   }
 
   //...
   public long countEven(Stream<Integer> numbers) {
-    count = 0;
-    numbers.filter(num -> num % 2 == 0).forEach(num -> count++);
-    return count;
+    return numbers.filter(num -> num % 2 == 0).count();
   }
+  /*
+  метод естественно надуманный, и такого не будет, но цели были такие
+  1. Хотя бы просто поправить на count стрима, так как уже есть, зачем свое
+  2. Вроде никто сразу не подумал что стрим может быть параллельным - а значит count++ будет давать ошибку при параллельном выполнении
+
+  Ну и в целом стрим одноразовый - один раз пролистнул, все. Так что принимать его уже ошибка, но задачка не про это была
+   */
 }

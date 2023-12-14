@@ -5,6 +5,7 @@ import common.Person;
 import common.PersonConverter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /*
 Задача 4
@@ -21,7 +22,10 @@ public class Task4 {
     this.personConverter = personConverter;
   }
 
+  // Тут классический пример конвертации коллекции каким-то маппером/конвертером, такой код будет повсюду)
   public List<ApiPersonDto> convert(List<Person> persons) {
-    return new ArrayList<>();
+    return persons.stream()
+        .map(personConverter::convert)
+        .toList();
   }
 }

@@ -6,6 +6,7 @@ import common.PersonConverter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /*
 Задача 5
@@ -22,7 +23,11 @@ public class Task5 {
     this.personConverter = personConverter;
   }
 
+
+  // Чуть больше чем в 4 таске - просто лямбда, и написать get из мапы
   public List<ApiPersonDto> convert(List<Person> persons, Map<Integer, Integer> personAreaIds) {
-    return new ArrayList<>();
+    return persons.stream()
+        .map(person -> personConverter.convert(person, personAreaIds.get(person.getId())))
+        .toList();
   }
 }
